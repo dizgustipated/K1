@@ -12,6 +12,18 @@ config IOSCHED_NOOP
 	  that do their own scheduling and require only minimal assistance from
 	  the kernel.
 
+config IOSCHED_FIOPS
+	tristate "FIOPS I/O scheduler"
+	default y
+	---help---
+	  The FIOPS I/O scheduler. WJH
+
+config IOSCHED_ZEN
+	tristate "ZEN I/O scheduler"
+	default y
+	---help---
+	  The ZEN I/O scheduler. WJH
+
 config IOSCHED_DEADLINE
 	tristate "Deadline I/O scheduler"
 	default y
@@ -41,10 +53,16 @@ config CFQ_GROUP_IOSCHED
 
 choice
 	prompt "Default I/O scheduler"
-	default DEFAULT_CFQ
+	default DEFAULT_FIOPS
 	help
 	  Select the I/O scheduler which will be used by default for all
 	  block devices.
+
+	config DEFAULT_FIOPS
+		bool "fiops" if IOSCHED_FIOPS=y
+		
+	config DEFAULT_ZEN
+		bool "zen" if IOSCHED_ZEN=y
 
 	config DEFAULT_DEADLINE
 		bool "Deadline" if IOSCHED_DEADLINE=y
@@ -59,6 +77,8 @@ endchoice
 
 config DEFAULT_IOSCHED
 	string
+	default "fiops" if DEFAULT_FIOPS
+	default "zen" if DEFAULT_ZEN
 	default "deadline" if DEFAULT_DEADLINE
 	default "cfq" if DEFAULT_CFQ
 	default "noop" if DEFAULT_NOOP
